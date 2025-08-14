@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Your Lesson Plan | Lesson Plan Generator</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" defer></script>
+  <script src="/js/main.js" defer></script>
+  <script src="/js/questions.js" defer></script>
+</head>
+<body>
+  <header class="bg-primary text-white py-3">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center">
+        <h1 class="h3 mb-0">Lesson Plan Generator</h1>
+        <nav>
+          <ul class="nav">
+            <li class="nav-item">
+              <a href="/" class="nav-link text-white">Home</a>
+            </li>
+            <li class="nav-item">
+              <a href="/questions" class="nav-link text-white">Create Plan</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="container py-4">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+          <div class="card-body p-4">
+            <div class="progress mb-4">
+              <div class="progress-bar" role="progressbar" style="width: 20%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5">
+                Step 1 of 5
+              </div>
+            </div>
+            
+            <form method="POST" action="/questions" id="questionForm">
+              <input type="hidden" name="currentStep" value="1">
+              
+              <!-- Step 1: Basic Information -->
+              <div id="step1" class="question-step">
+                <h3 class="mb-4">Basic Information</h3>
+                
+                <div class="mb-3">
+                  <label for="subject" class="form-label">Subject Area</label>
+                  <select class="form-select ai-choices-select" id="subject" name="subject" required>
+                    <option value="" selected disabled>Select a subject area</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Science">Science</option>
+                    <option value="Language Arts">Language Arts</option>
+                    <option value="Social Studies">Social Studies</option>
+                    <option value="History">History</option>
+                    <option value="Geography">Geography</option>
+                    <option value="Art">Art</option>
+                    <option value="Music">Music</option>
+                    <option value="Physical Education">Physical Education</option>
+                    <option value="Foreign Language">Foreign Language</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Health">Health</option>
+                    <option value="Economics">Economics</option>
+                    <option value="Psychology">Psychology</option>
+                    <option value="Philosophy">Philosophy</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="specificTopic" class="form-label">Specific Topic</label>
+                  <input type="text" class="form-control" id="specificTopic" name="specificTopic" placeholder="e.g., Fractions, Photosynthesis, Shakespeare" required>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="gradeLevel" class="form-label">Grade Level</label>
+                  <select class="form-select ai-choices-select" id="gradeLevel" name="gradeLevel" required>
+                    <option value="" selected disabled>Select a grade level</option>
+                    <option value="Pre-K">Pre-K</option>
+                    <option value="Kindergarten">Kindergarten</option>
+                    <option value="Grade 1">Grade 1</option>
+                    <option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option>
+                    <option value="Grade 4">Grade 4</option>
+                    <option value="Grade 5">Grade 5</option>
+                    <option value="Grade 6">Grade 6</option>
+                    <option value="Grade 7">Grade 7</option>
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option>
+                    <option value="Grade 12">Grade 12</option>
+                    <option value="Undergraduate - Freshman">Undergraduate - Freshman</option>
+                    <option value="Undergraduate - Sophomore">Undergraduate - Sophomore</option>
+                    <option value="Undergraduate - Junior">Undergraduate - Junior</option>
+                    <option value="Undergraduate - Senior">Undergraduate - Senior</option>
+                    <option value="Graduate">Graduate</option>
+                  </select>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="duration" class="form-label">Lesson Duration</label>
+                  <select class="form-select ai-choices-select" id="duration" name="duration" required>
+                    <option value="" selected disabled>Select a duration</option>
+                    <option value="30 minutes">30 minutes</option>
+                    <option value="45 minutes">45 minutes</option>
+                    <option value="60 minutes">60 minutes</option>
+                    <option value="90 minutes">90 minutes</option>
+                    <option value="2 hours">2 hours</option>
+                    <option value="custom">Custom duration</option>
+                  </select>
+                  <div id="customDurationContainer" class="mt-2 d-none">
+                    <input type="text" class="form-control" id="customDuration" name="customDuration" placeholder="e.g., 3 days, 1 week">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 2: Learning Objectives -->
+              <div id="step2" class="question-step d-none">
+                <h3 class="mb-4">Learning Objectives</h3>
+                
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" id="debugModeSwitch">
+                      <label class="form-check-label" for="debugModeSwitch">Debug Mode</label>
+                    </div>
+                  </div>
+                </div>
+  
+                <!-- Learning Objectives with AI Suggestions -->
+                <div class="mb-3">
+                  <label for="objectives" class="form-label d-flex justify-content-between align-items-center">
+                    <span>What are the main learning objectives for this lesson?</span>
+                    <button type="button" id="suggestObjectivesBtn" class="btn btn-sm btn-outline-primary">AI Suggestions</button>
+                  </label>
+                  <textarea class="form-control" id="objectives" name="objectives" rows="4" placeholder="e.g., Students will be able to identify the main parts of a plant, Students will understand the concept of fractions" required></textarea>
+                  <div class="form-text">List 2-4 specific, measurable objectives that students should achieve by the end of the lesson.</div>
+                  <div id="objectivesSuggestions" class="mt-2">
+                    <div class="card">
+                      <div class="card-body">
+                        <h6 class="card-title">Suggested Learning Objectives</h6>
+                        <div id="suggestedObjectivesList">
+                          <!-- Suggestions will be loaded here -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Prior Knowledge with AI Suggestions -->
+                <div class="mb-3">
+                  <label for="priorKnowledge" class="form-label d-flex justify-content-between align-items-center">
+                    <span>What prior knowledge should students have?</span>
+                    <button type="button" id="suggestPriorKnowledgeBtn" class="btn btn-sm btn-outline-primary">AI Suggestions</button>
+                  </label>
+                  <textarea class="form-control" id="priorKnowledge" name="priorKnowledge" rows="3" placeholder="e.g., Basic understanding of addition and subtraction, Familiarity with the scientific method"></textarea>
+                  <div id="priorKnowledgeSuggestions" class="mt-2 d-none">
+                    <div class="card">
+                      <div class="card-body">
+                        <h6 class="card-title">Suggested Prior Knowledge</h6>
+                        <div id="suggestedPriorKnowledgeList">
+                          <!-- Suggestions will be loaded here -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Educational Standards with AI Suggestions -->
+                <div class="mb-3">
+                  <label for="standards" class="form-label d-flex justify-content-between align-items-center">
+                    <span>Educational Standards (optional)</span>
+                    <button type="button" id="suggestStandardsBtn" class="btn btn-sm btn-outline-primary">AI Suggestions</button>
+                  </label>
+                  <textarea class="form-control" id="standards" name="standards" rows="3" placeholder="e.g., CCSS.MATH.CONTENT.3.NF.A.1, NGSS 4-LS1-1"></textarea>
+                  <div class="form-text">Include any specific educational standards this lesson addresses (Common Core, NGSS, state standards, etc.)</div>
+                  <div id="standardsSuggestions" class="mt-2 d-none">
+                    <div class="card">
+                      <div class="card-body">
+                        <h6 class="card-title">Suggested Educational Standards</h6>
+                        <div id="suggestedStandardsList">
+                          <!-- Suggestions will be loaded here -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Step 3: Teaching Approach -->
+              <div id="step3" class="question-step d-none">
+                <h3 class="mb-4">Teaching Approach</h3>
+                
+                <div class="mb-3 ai-choices-checkbox-group" data-field-name="teachingMethods">
+                  <label class="form-label">What teaching methods do you prefer for this lesson?</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="teachingMethods" value="Direct Instruction" id="methodDirect">
+                    <label class="form-check-label" for="methodDirect">Direct Instruction</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="teachingMethods" value="Inquiry-Based Learning" id="methodInquiry">
+                    <label class="form-check-label" for="methodInquiry">Inquiry-Based Learning</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="teachingMethods" value="Collaborative Learning" id="methodCollaborative">
+                    <label class="form-check-label" for="methodCollaborative">Collaborative Learning</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="teachingMethods" value="Project-Based Learning" id="methodProject">
+                    <label class="form-check-label" for="methodProject">Project-Based Learning</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="teachingMethods" value="Discussion-Based" id="methodDiscussion">
+                    <label class="form-check-label" for="methodDiscussion">Discussion-Based</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="teachingMethods" value="Flipped Classroom" id="methodFlipped">
+                    <label class="form-check-label" for="methodFlipped">Flipped Classroom</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="teachingMethods" value="Other" id="methodOther">
+                    <label class="form-check-label" for="methodOther">Other</label>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="resources" class="form-label">What resources are available for this lesson?</label>
+                  <textarea class="form-control" id="resources" name="resources" rows="3" placeholder="e.g., Textbooks, computers, lab equipment, art supplies"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="teachingStyle" class="form-label">Additional notes about your teaching style or preferences</label>
+                  <textarea class="form-control" id="teachingStyle" name="teachingStyle" rows="3" placeholder="e.g., I prefer hands-on activities, I like to incorporate technology, I use a lot of visual aids"></textarea>
+                </div>
+              </div>
+              
+              <!-- Step 4: Student Information -->
+              <div id="step4" class="question-step d-none">
+                <h3 class="mb-4">Student Information</h3>
+                
+                <div class="mb-3">
+                  <label for="classSize" class="form-label">Class Size</label>
+                  <input type="number" class="form-control" id="classSize" name="classSize" min="1" placeholder="e.g., 25">
+                </div>
+                
+                <div class="mb-3 ai-choices-checkbox-group" data-field-name="studentCharacteristics">
+                  <label class="form-label">Student Characteristics (select all that apply)</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="English Language Learners" id="charELL">
+                    <label class="form-check-label" for="charELL">English Language Learners</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Students with IEPs/504 Plans" id="charIEP">
+                    <label class="form-check-label" for="charIEP">Students with IEPs/504 Plans</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Gifted/Advanced Learners" id="charGifted">
+                    <label class="form-check-label" for="charGifted">Gifted/Advanced Learners</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Mixed Ability Levels" id="charMixed">
+                    <label class="form-check-label" for="charMixed">Mixed Ability Levels</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Behavioral Challenges" id="charBehavioral">
+                    <label class="form-check-label" for="charBehavioral">Behavioral Challenges</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Other" id="charOther">
+                    <label class="form-check-label" for="charOther">Other</label>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="differentiationNeeds" class="form-label">Specific differentiation needs or accommodations</label>
+                  <textarea class="form-control" id="differentiationNeeds" name="differentiationNeeds" rows="3" placeholder="e.g., Visual supports for ELL students, Extended time for assessments, Alternative assignments for students with specific needs"></textarea>
+                </div>
+              </div>
+              
+              <!-- Step 5: Assessment and Additional Information -->
+              <div id="step5" class="question-step d-none">
+                <h3 class="mb-4">Assessment and Additional Information</h3>
+                
+                <div class="mb-3 ai-choices-checkbox-group" data-field-name="assessmentMethods">
+                  <label class="form-label">Assessment Methods (select all that apply)</label>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Formative Assessment" id="assessFormative">
+                    <label class="form-check-label" for="assessFormative">Formative Assessment (during lesson)</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Summative Assessment" id="assessSummative">
+                    <label class="form-check-label" for="assessSummative">Summative Assessment (end of lesson)</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Performance Task" id="assessPerformance">
+                    <label class="form-check-label" for="assessPerformance">Performance Task</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Project" id="assessProject">
+                    <label class="form-check-label" for="assessProject">Project</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Quiz/Test" id="assessQuiz">
+                    <label class="form-check-label" for="assessQuiz">Quiz/Test</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Self-Assessment" id="assessSelf">
+                    <label class="form-check-label" for="assessSelf">Self-Assessment</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Peer Assessment" id="assessPeer">
+                    <label class="form-check-label" for="assessPeer">Peer Assessment</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Other" id="assessOther">
+                    <label class="form-check-label" for="assessOther">Other</label>
+                  </div>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="assessmentDetails" class="form-label">Assessment details or preferences</label>
+                  <textarea class="form-control" id="assessmentDetails" name="assessmentDetails" rows="3" placeholder="e.g., Exit tickets at the end of class, Group presentation rubric, Multiple choice quiz"></textarea>
+                </div>
+                
+                <div class="mb-3">
+                  <label for="additionalNotes" class="form-label">Any additional notes or requirements for this lesson plan</label>
+                  <textarea class="form-control" id="additionalNotes" name="additionalNotes" rows="3" placeholder="e.g., Must include a homework assignment, Should connect to previous lesson on X, Need to prepare students for upcoming test"></textarea>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" id="prevButton" class="btn btn-outline-secondary d-none">Previous</button>
+                <a href="/" class="btn btn-outline-secondary" id="cancelButton">Cancel</a>
+                <button type="submit" id="nextButton" class="btn btn-primary">Next</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-light py-3 mt-5">
+    <div class="container text-center">
+      <p class="text-muted mb-0">Lesson Plan Generator &copy; 2025</p>
+    </div>
+  </footer>
+</body>
+</html>

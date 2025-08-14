@@ -1,0 +1,275 @@
+<div class="row">
+  <div class="col-md-10 offset-md-1">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="mb-0">Your Lesson Plan</h2>
+          <div>
+            <button id="printBtn" class="btn btn-outline-secondary me-2">
+              <i class="bi bi-printer"></i> Print
+            </button>
+            <button id="downloadBtn" class="btn btn-outline-primary">
+              <i class="bi bi-download"></i> Download
+            </button>
+          </div>
+        </div>
+        
+        <div id="lessonPlanLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-3">Generating your lesson plan...</p>
+          <p class="text-muted small">This may take a few moments</p>
+        </div>
+        
+        <div id="lessonPlanContent" class="d-none">
+          <!-- Lesson plan content will be inserted here by JavaScript -->
+        </div>
+        
+        <div id="lessonPlanError" class="d-none">
+          <div class="alert alert-danger">
+            <h4 class="alert-heading">Error Generating Lesson Plan</h4>
+            <p id="errorMessage">There was a problem generating your lesson plan. Please try again.</p>
+            <hr>
+            <p class="mb-0">You can go back and adjust your inputs or try again later.</p>
+          </div>
+          <div class="text-center mt-3">
+            <a href="/questions" class="btn btn-primary">Start Over</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    const $lessonPlanLoading = $('#lessonPlanLoading');
+    const $lessonPlanContent = $('#lessonPlanContent');
+    const $lessonPlanError = $('#lessonPlanError');
+    const $errorMessage = $('#errorMessage');
+    const $printBtn = $('#printBtn');
+    const $downloadBtn = $('#downloadBtn');
+    
+    // Get query parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const params = {};
+    urlParams.forEach((value, key) => {
+      params[key] = value;
+    });
+    
+    // Function to generate the lesson plan
+    async function generateLessonPlan() {
+      try {
+        const response = await $.ajax({
+          url: '/api/generate-lesson-plan',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(params)
+        });
+        
+        if (response.success && response.lessonPlan) {
+          displayLessonPlan(response.lessonPlan);
+        } else if (response.success && response.lessonPlan && response.lessonPlan.rawContent) {
+          // Handle case where response is not JSON but raw text
+          displayRawLessonPlan(response.lessonPlan.rawContent);
+        } else {
+          throw new Error(response.error || 'Failed to generate lesson plan');
+        }
+      } catch (error) {
+        console.error('Error generating lesson plan:', error);
+        $lessonPlanLoading.addClass('d-none');
+        $lessonPlanError.removeClass('d-none');
+        $errorMessage.text(error.message || 'There was a problem generating your lesson plan. Please try again.');
+      }
+    }
+    
+    // Function to display the lesson plan
+    function displayLessonPlan(lessonPlan) {
+      $lessonPlanLoading.addClass('d-none');
+      $lessonPlanContent.removeClass('d-none');
+      
+      // Create the lesson plan HTML
+      let html = `
+        <div class="lesson-plan">
+          <div class="lesson-header mb-4">
+            <h3>${lessonPlan.title || 'Lesson Plan'}</h3>
+            <div class="row mt-3">
+              <div class="col-md-4">
+                <p><strong>Subject:</strong> ${params.subject || ''} ${params.specificTopic ? '- ' + params.specificTopic : ''}</p>
+              </div>
+              <div class="col-md-4">
+                <p><strong>Grade Level:</strong> ${params.gradeLevel || ''}</p>
+              </div>
+              <div class="col-md-4">
+                <p><strong>Duration:</strong> ${params.customDuration || params.duration || ''}</p>
+              </div>
+            </div>
+          </div>
+      `;
+      
+      // Add each section of the lesson plan
+      for (const [key, value] of Object.entries(lessonPlan)) {
+        if (key !== 'title' && typeof value === 'object') {
+          html += `
+            <div class="lesson-section mb-4">
+              <h4 class="border-bottom pb-2">${formatSectionTitle(key)}</h4>
+              ${formatSectionContent(value)}
+            </div>
+          `;
+        } else if (key !== 'title' && typeof value === 'string') {
+          html += `
+            <div class="lesson-section mb-4">
+              <h4 class="border-bottom pb-2">${formatSectionTitle(key)}</h4>
+              <p>${value}</p>
+            </div>
+          `;
+        }
+      }
+      
+      html += '</div>';
+      
+      $lessonPlanContent.html(html);
+    }
+    
+    // Function to display raw lesson plan text
+    function displayRawLessonPlan(rawContent) {
+      $lessonPlanLoading.addClass('d-none');
+      $lessonPlanContent.removeClass('d-none');
+      
+      // Create a basic structure for the raw content
+      let html = `
+        <div class="lesson-plan">
+          <div class="lesson-header mb-4">
+            <h3>Lesson Plan</h3>
+            <div class="row mt-3">
+              <div class="col-md-4">
+                <p><strong>Subject:</strong> ${params.subject || ''} ${params.specificTopic ? '- ' + params.specificTopic : ''}</p>
+              </div>
+              <div class="col-md-4">
+                <p><strong>Grade Level:</strong> ${params.gradeLevel || ''}</p>
+              </div>
+              <div class="col-md-4">
+                <p><strong>Duration:</strong> ${params.customDuration || params.duration || ''}</p>
+              </div>
+            </div>
+          </div>
+          <div class="lesson-content">
+            ${formatRawContent(rawContent)}
+          </div>
+        </div>
+      `;
+      
+      $lessonPlanContent.html(html);
+    }
+    
+    // Helper function to format section titles
+    function formatSectionTitle(key) {
+      return key
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/^./, str => str.toUpperCase())
+        .replace(/([a-z])([A-Z])/g, '$1 $2');
+    }
+    
+    // Helper function to format section content
+    function formatSectionContent(content) {
+      if (Array.isArray(content)) {
+        return `
+          <ul class="list-group list-group-flush">
+            ${content.map(item => `<li class="list-group-item">${typeof item === 'object' ? formatSectionContent(item) : item}</li>`).join('')}
+          </ul>
+        `;
+      } else if (typeof content === 'object') {
+        let html = '<div class="nested-section">';
+        
+        for (const [key, value] of Object.entries(content)) {
+          html += `
+            <div class="mb-3">
+              <h5>${formatSectionTitle(key)}</h5>
+              ${typeof value === 'object' ? formatSectionContent(value) : `<p>${value}</p>`}
+            </div>
+          `;
+        }
+        
+        html += '</div>';
+        return html;
+      } else {
+        return `<p>${content}</p>`;
+      }
+    }
+    
+    // Helper function to format raw content
+    function formatRawContent(content) {
+      // Replace newlines with <br> tags
+      return content
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/^/, '<p>')
+        .replace(/$/, '</p>');
+    }
+    
+    // Print button functionality
+    $printBtn.on('click', function() {
+      window.print();
+    });
+    
+    // Download button functionality
+    $downloadBtn.on('click', function() {
+      const lessonPlanText = $('#lessonPlanContent').text();
+      const blob = new Blob([lessonPlanText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      
+      const $a = $('<a>')
+        .attr({
+          href: url,
+          download: 'lesson_plan.txt'
+        })
+        .appendTo('body');
+      
+      $a[0].click();
+      $a.remove();
+      URL.revokeObjectURL(url);
+    });
+    
+    // Generate the lesson plan when the page loads
+    generateLessonPlan();
+  });
+</script>
+
+<style>
+  @media print {
+    header, footer, .btn, #printBtn, #downloadBtn {
+      display: none !important;
+    }
+    
+    body {
+      font-size: 12pt;
+    }
+    
+    .card {
+      border: none !important;
+      box-shadow: none !important;
+    }
+    
+    .card-body {
+      padding: 0 !important;
+    }
+  }
+  
+  .lesson-plan h4 {
+    color: #0d6efd;
+    margin-top: 1.5rem;
+  }
+  
+  .lesson-plan h5 {
+    font-size: 1.1rem;
+    margin-top: 1rem;
+  }
+  
+  .nested-section {
+    padding-left: 1rem;
+    border-left: 3px solid #e9ecef;
+  }
+</style>

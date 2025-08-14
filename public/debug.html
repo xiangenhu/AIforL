@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lesson Plan Generator - Debug Console</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding: 20px;
+    }
+    .debug-panel {
+      margin-top: 20px;
+      border: 2px solid #dc3545;
+      border-radius: 5px;
+    }
+    .debug-header {
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 15px;
+      font-weight: bold;
+    }
+    .debug-body {
+      padding: 15px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    pre {
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .status-indicator {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    .status-on {
+      background-color: #28a745;
+    }
+    .status-off {
+      background-color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="mb-4">Lesson Plan Generator - Debug Console</h1>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        Debug Controls
+      </div>
+      <div class="card-body">
+        <div class="row mb-3">
+          <div class="col-md-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="debugEnabled">
+              <label class="form-check-label" for="debugEnabled">Debug Mode</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="verboseEnabled">
+              <label class="form-check-label" for="verboseEnabled">Verbose Mode</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="logRequests">
+              <label class="form-check-label" for="logRequests">Log LLM Requests</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="logResponses">
+              <label class="form-check-label" for="logResponses">Log LLM Responses</label>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between">
+          <button id="updateSettings" class="btn btn-primary">Update Debug Settings</button>
+          <button id="checkStatus" class="btn btn-outline-secondary">Check Status</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card mb-4">
+      <div class="card-header bg-success text-white">
+        Test API Request
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <label for="subject" class="form-label">Subject</label>
+          <input type="text" class="form-control" id="subject" value="Mathematics">
+        </div>
+        <div class="mb-3">
+          <label for="specificTopic" class="form-label">Specific Topic</label>
+          <input type="text" class="form-control" id="specificTopic" value="Fractions">
+        </div>
+        <div class="mb-3">
+          <label for="gradeLevel" class="form-label">Grade Level</label>
+          <input type="text" class="form-control" id="gradeLevel" value="Grade 5">
+        </div>
+        <button id="testRequest" class="btn btn-success">Test API Request</button>
+      </div>
+    </div>
+    
+    <div class="debug-panel">
+      <div class="debug-header d-flex justify-content-between align-items-center">
+        <div>
+          <span class="status-indicator" id="statusIndicator"></span>
+          Debug Status
+        </div>
+        <button id="clearLog" class="btn btn-sm btn-light">Clear Log</button>
+      </div>
+      <div class="debug-body" id="debugOutput">
+        <div class="text-center text-muted">
+          <p>Debug output will appear here</p>
+          <p>Click "Check Status" to get started</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const debugEnabled = document.getElementById('debugEnabled');
+      const verboseEnabled = document.getElementById('verboseEnabled');
+      const logRequests = document.getElementById('logRequests');
+      const logResponses = document.getElementById('logResponses');
+      const updateSettings = document.getElementById('updateSettings');
+      const checkStatus = document.getElementById('checkStatus');
+      const testRequest = document.getElementById('testRequest');
+      const clearLog = document.getElementById('clearLog');
+      const debugOutput = document.getElementById('debugOutput');
+      const statusIndicator = document.getElementById('statusIndicator');
+      
+      // Function to add log entry
+      function addLogEntry(title, data, isError = false) {
+        const timestamp = new Date().toISOString();
+        const entryDiv = document.createElement('div');
+        entryDiv.className = isError ? 'mb-3 border-start border-danger border-3 ps-2' : 'mb-3';
+        
+        const titleEl = document.createElement('h6');
+        titleEl.className = isError ? 'text-danger' : '';
+        titleEl.textContent = `${title} (${timestamp})`;
+        
+        const contentEl = document.createElement('pre');
+        contentEl.textContent = typeof data === 'object' ? JSON.stringify(data, null, 2) : data;
+        
+        entryDiv.appendChild(titleEl);
+        entryDiv.appendChild(contentEl);
+        
+        debugOutput.prepend(entryDiv);
+      }
+      
+      // Function to update status indicator
+      function updateStatusIndicator(isEnabled) {
+        statusIndicator.className = isEnabled ? 'status-indicator status-on' : 'status-indicator status-off';
+      }
+      
+      // Check debug status
+      checkStatus.addEventListener('click', async function() {
+        try {
+          const response = await fetch('/api/debug/status');
+          const data = await response.json();
+          
+          addLogEntry('Debug Status', data);
+          
+          if (data.success && data.debug) {
+            debugEnabled.checked = data.debug.enabled;
+            verboseEnabled.checked = data.debug.verbose;
+            logRequests.checked = data.debug.logLLMRequests;
+            logResponses.checked = data.debug.logLLMResponses;
+            
+            updateStatusIndicator(data.debug.enabled);
+          }
+        } catch (error) {
+          addLogEntry('Error Checking Status', error.message, true);
+          updateStatusIndicator(false);
+        }
+      });
+      
+      // Update debug settings
+      updateSettings.addEventListener('click', async function() {
+        try {
+          const settings = {
+            enabled: debugEnabled.checked,
+            verbose: verboseEnabled.checked,
+            logLLMRequests: logRequests.checked,
+            logLLMResponses: logResponses.checked
+          };
+          
+          const response = await fetch('/api/debug/toggle', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settings)
+          });
+          
+          const data = await response.json();
+          addLogEntry('Updated Debug Settings', data);
+          
+          if (data.success && data.debug) {
+            updateStatusIndicator(data.debug.enabled);
+          }
+        } catch (error) {
+          addLogEntry('Error Updating Settings', error.message, true);
+        }
+      });
+      
+      // Test API request
+      testRequest.addEventListener('click', async function() {
+        try {
+          const subject = document.getElementById('subject').value;
+          const specificTopic = document.getElementById('specificTopic').value;
+          const gradeLevel = document.getElementById('gradeLevel').value;
+          
+          if (!subject || !gradeLevel) {
+            addLogEntry('Validation Error', 'Subject and Grade Level are required', true);
+            return;
+          }
+          
+          addLogEntry('Making API Request', {
+            subject,
+            specificTopic,
+            gradeLevel,
+            debug: debugEnabled.checked,
+            verbose: verboseEnabled.checked
+          });
+          
+          const response = await fetch('/api/suggest-lesson-content', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              subject,
+              specificTopic,
+              gradeLevel,
+              debug: debugEnabled.checked,
+              verbose: verboseEnabled.checked
+            })
+          });
+          
+          const data = await response.json();
+          
+          // Log the response
+          addLogEntry('API Response', {
+            success: data.success,
+            debugInfo: data._debug || 'No debug info available',
+            objectivesCount: data.suggestions?.objectives?.length || 0,
+            priorKnowledgeCount: data.suggestions?.priorKnowledge?.length || 0,
+            standardsCount: data.suggestions?.standards?.length || 0
+          });
+          
+          // If there's raw response data, log it separately
+          if (data.suggestions && data.suggestions.rawResponse) {
+            addLogEntry('Raw LLM Response', data.suggestions.rawResponse);
+          }
+          
+          // If there's debug info in the suggestions, log it separately
+          if (data.suggestions && data.suggestions._debug) {
+            addLogEntry('Suggestions Debug Info', data.suggestions._debug);
+          }
+        } catch (error) {
+          addLogEntry('Error Making API Request', error.message, true);
+        }
+      });
+      
+      // Clear log
+      clearLog.addEventListener('click', function() {
+        debugOutput.innerHTML = '<div class="text-center text-muted"><p>Debug log cleared</p></div>';
+      });
+      
+      // Check status on page load
+      checkStatus.click();
+    });
+  </script>
+</body>
+</html>

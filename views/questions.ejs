@@ -1,0 +1,743 @@
+<div class="row">
+  <div class="col-md-8 offset-md-2">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <div class="progress mb-4">
+          <div class="progress-bar" role="progressbar" style="width: <%= (currentStep / 5) * 100 %>%;" aria-valuenow="<%= currentStep %>" aria-valuemin="0" aria-valuemax="5">
+            Step <%= currentStep %> of 5
+          </div>
+        </div>
+        
+        <form method="POST" action="/questions" id="questionForm" novalidate>
+          <input type="hidden" name="currentStep" value="<%= currentStep %>">
+          
+          <% for (const [key, value] of Object.entries(previousAnswers)) { %>
+            <% if (key !== 'step' && key !== 'currentStep') { %>
+              <input type="hidden" name="<%= key %>" value="<%= value %>">
+            <% } %>
+          <% } %>
+          
+          <% if (currentStep == 1) { %>
+            <!-- Step 1: Basic Information -->
+            <h3 class="mb-4">Basic Information</h3>
+            
+            <div class="mb-3">
+              <label for="subject" class="form-label">Subject Area</label>
+              <select class="form-select ai-choices-select" id="subject" name="subject" required>
+                <option value="" selected disabled>Select a subject area</option>
+                <option value="Mathematics">Mathematics</option>
+                <option value="Science">Science</option>
+                <option value="Language Arts">Language Arts</option>
+                <option value="Social Studies">Social Studies</option>
+                <option value="History">History</option>
+                <option value="Geography">Geography</option>
+                <option value="Art">Art</option>
+                <option value="Music">Music</option>
+                <option value="Physical Education">Physical Education</option>
+                <option value="Foreign Language">Foreign Language</option>
+                <option value="Computer Science">Computer Science</option>
+                <option value="Health">Health</option>
+                <option value="Economics">Economics</option>
+                <option value="Psychology">Psychology</option>
+                <option value="Philosophy">Philosophy</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="specificTopic" class="form-label">Specific Topic</label>
+              <input type="text" class="form-control" id="specificTopic" name="specificTopic" placeholder="e.g., Fractions, Photosynthesis, Shakespeare" required>
+            </div>
+            
+            <div class="mb-3">
+              <label for="gradeLevel" class="form-label">Grade Level</label>
+              <select class="form-select ai-choices-select" id="gradeLevel" name="gradeLevel" required>
+                <option value="" selected disabled>Select a grade level</option>
+                <option value="Pre-K">Pre-K</option>
+                <option value="Kindergarten">Kindergarten</option>
+                <option value="Grade 1">Grade 1</option>
+                <option value="Grade 2">Grade 2</option>
+                <option value="Grade 3">Grade 3</option>
+                <option value="Grade 4">Grade 4</option>
+                <option value="Grade 5">Grade 5</option>
+                <option value="Grade 6">Grade 6</option>
+                <option value="Grade 7">Grade 7</option>
+                <option value="Grade 8">Grade 8</option>
+                <option value="Grade 9">Grade 9</option>
+                <option value="Grade 10">Grade 10</option>
+                <option value="Grade 11">Grade 11</option>
+                <option value="Grade 12">Grade 12</option>
+                <option value="College - Undergraduate">College - Undergraduate</option>
+                <option value="College - Graduate">College - Graduate</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="duration" class="form-label">Lesson Duration</label>
+              <select class="form-select ai-choices-select" id="duration" name="duration" required>
+                <option value="" selected disabled>Select a duration</option>
+                <option value="30 minutes">30 minutes</option>
+                <option value="45 minutes">45 minutes</option>
+                <option value="60 minutes">60 minutes</option>
+                <option value="90 minutes">90 minutes</option>
+                <option value="2 hours">2 hours</option>
+                <option value="custom">Custom duration</option>
+              </select>
+              <div id="customDurationContainer" class="mt-2 d-none">
+                <input type="text" class="form-control" id="customDuration" name="customDuration" placeholder="e.g., 3 days, 1 week">
+              </div>
+            </div>
+            
+          <% } else if (currentStep == 2) { %>
+            <!-- Step 2: Learning Objectives -->
+            <h3 class="mb-4">Learning Objectives</h3>
+            
+            
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="debugModeSwitch">
+                  <label class="form-check-label" for="debugModeSwitch">Debug Mode</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Learning Objectives with AI Suggestions -->
+            <div class="mb-3">
+              <label for="objectives" class="form-label d-flex justify-content-between align-items-center">
+                <span>What are the main learning objectives for this lesson?</span>
+                <button type="button" id="suggestObjectivesBtn" class="btn btn-sm btn-outline-primary">AI Suggestions</button>
+              </label>
+              <textarea class="form-control" id="objectives" name="objectives" rows="4" placeholder="e.g., Students will be able to identify the main parts of a plant, Students will understand the concept of fractions" required tabindex="0"></textarea>
+              <div class="form-text">List 2-4 specific, measurable objectives that students should achieve by the end of the lesson.</div>
+              <div id="objectivesSuggestions" class="mt-2">
+                <div class="card">
+                  <div class="card-body">
+                    <h6 class="card-title">Suggested Learning Objectives</h6>
+                    <div id="suggestedObjectivesList">
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="test-objective-1" value="Students will be able to identify and classify polynomials by degree and number of terms.">
+                        <div class="d-flex flex-column">
+                          <label class="form-check-label" for="test-objective-1">Students will be able to identify and classify polynomials by degree and number of terms.</label>
+                          <small class="text-muted ms-4 mt-1"><span class="badge bg-light text-dark">Type: Cognitive</span></small>
+                        </div>
+                      </div>
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="test-objective-2" value="Students will be able to add and subtract polynomials using algebraic methods.">
+                        <div class="d-flex flex-column">
+                          <label class="form-check-label" for="test-objective-2">Students will be able to add and subtract polynomials using algebraic methods.</label>
+                          <small class="text-muted ms-4 mt-1"><span class="badge bg-light text-dark">Type: Application</span></small>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Prior Knowledge with AI Suggestions -->
+            <div class="mb-3">
+              <label for="priorKnowledge" class="form-label d-flex justify-content-between align-items-center">
+                <span>What prior knowledge should students have?</span>
+                <button type="button" id="suggestPriorKnowledgeBtn" class="btn btn-sm btn-outline-primary">AI Suggestions</button>
+              </label>
+              <textarea class="form-control" id="priorKnowledge" name="priorKnowledge" rows="3" placeholder="e.g., Basic understanding of addition and subtraction, Familiarity with the scientific method"></textarea>
+              <div id="priorKnowledgeSuggestions" class="mt-2 d-none">
+                <div class="card">
+                  <div class="card-body">
+                    <h6 class="card-title">Suggested Prior Knowledge</h6>
+                    <div id="suggestedPriorKnowledgeList"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Educational Standards with AI Suggestions -->
+            <div class="mb-3">
+              <label for="standards" class="form-label d-flex justify-content-between align-items-center">
+                <span>Educational Standards (optional)</span>
+                <button type="button" id="suggestStandardsBtn" class="btn btn-sm btn-outline-primary">AI Suggestions</button>
+              </label>
+              <textarea class="form-control" id="standards" name="standards" rows="3" placeholder="e.g., CCSS.MATH.CONTENT.3.NF.A.1, NGSS 4-LS1-1"></textarea>
+              <div class="form-text">Include any specific educational standards this lesson addresses (Common Core, NGSS, state standards, etc.)</div>
+              <div id="standardsSuggestions" class="mt-2 d-none">
+                <div class="card">
+                  <div class="card-body">
+                    <h6 class="card-title">Suggested Educational Standards</h6>
+                    <div id="suggestedStandardsList"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          <% } else if (currentStep == 3) { %>
+            <!-- Step 3: Teaching Approach -->
+            <h3 class="mb-4">Teaching Approach</h3>
+            
+            <div class="mb-3 ai-choices-checkbox-group" data-field-name="teachingMethods">
+              <label class="form-label">What teaching methods do you prefer for this lesson?</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="teachingMethods" value="Direct Instruction" id="methodDirect">
+                <label class="form-check-label" for="methodDirect">Direct Instruction</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="teachingMethods" value="Inquiry-Based Learning" id="methodInquiry">
+                <label class="form-check-label" for="methodInquiry">Inquiry-Based Learning</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="teachingMethods" value="Collaborative Learning" id="methodCollaborative">
+                <label class="form-check-label" for="methodCollaborative">Collaborative Learning</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="teachingMethods" value="Project-Based Learning" id="methodProject">
+                <label class="form-check-label" for="methodProject">Project-Based Learning</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="teachingMethods" value="Discussion-Based" id="methodDiscussion">
+                <label class="form-check-label" for="methodDiscussion">Discussion-Based</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="teachingMethods" value="Flipped Classroom" id="methodFlipped">
+                <label class="form-check-label" for="methodFlipped">Flipped Classroom</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="teachingMethods" value="Other" id="methodOther">
+                <label class="form-check-label" for="methodOther">Other</label>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="resources" class="form-label">What resources are available for this lesson?</label>
+              <textarea class="form-control" id="resources" name="resources" rows="3" placeholder="e.g., Textbooks, computers, lab equipment, art supplies"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label for="teachingStyle" class="form-label">Additional notes about your teaching style or preferences</label>
+              <textarea class="form-control" id="teachingStyle" name="teachingStyle" rows="3" placeholder="e.g., I prefer hands-on activities, I like to incorporate technology, I use a lot of visual aids"></textarea>
+            </div>
+            
+          <% } else if (currentStep == 4) { %>
+            <!-- Step 4: Student Information -->
+            <h3 class="mb-4">Student Information</h3>
+            
+            <div class="mb-3">
+              <label for="classSize" class="form-label">Class Size</label>
+              <input type="number" class="form-control" id="classSize" name="classSize" min="1" placeholder="e.g., 25">
+            </div>
+            
+            <div class="mb-3 ai-choices-checkbox-group" data-field-name="studentCharacteristics">
+              <label class="form-label">Student Characteristics (select all that apply)</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="English Language Learners" id="charELL">
+                <label class="form-check-label" for="charELL">English Language Learners</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Students with IEPs/504 Plans" id="charIEP">
+                <label class="form-check-label" for="charIEP">Students with IEPs/504 Plans</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Gifted/Advanced Learners" id="charGifted">
+                <label class="form-check-label" for="charGifted">Gifted/Advanced Learners</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Mixed Ability Levels" id="charMixed">
+                <label class="form-check-label" for="charMixed">Mixed Ability Levels</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Behavioral Challenges" id="charBehavioral">
+                <label class="form-check-label" for="charBehavioral">Behavioral Challenges</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="studentCharacteristics" value="Other" id="charOther">
+                <label class="form-check-label" for="charOther">Other</label>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="differentiationNeeds" class="form-label">Specific differentiation needs or accommodations</label>
+              <textarea class="form-control" id="differentiationNeeds" name="differentiationNeeds" rows="3" placeholder="e.g., Visual supports for ELL students, Extended time for assessments, Alternative assignments for students with specific needs"></textarea>
+            </div>
+            
+          <% } else if (currentStep == 5) { %>
+            <!-- Step 5: Assessment and Additional Information -->
+            <h3 class="mb-4">Assessment and Additional Information</h3>
+            
+            <div class="mb-3 ai-choices-checkbox-group" data-field-name="assessmentMethods">
+              <label class="form-label">Assessment Methods (select all that apply)</label>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Formative Assessment" id="assessFormative">
+                <label class="form-check-label" for="assessFormative">Formative Assessment (during lesson)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Summative Assessment" id="assessSummative">
+                <label class="form-check-label" for="assessSummative">Summative Assessment (end of lesson)</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Performance Task" id="assessPerformance">
+                <label class="form-check-label" for="assessPerformance">Performance Task</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Project" id="assessProject">
+                <label class="form-check-label" for="assessProject">Project</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Quiz/Test" id="assessQuiz">
+                <label class="form-check-label" for="assessQuiz">Quiz/Test</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Self-Assessment" id="assessSelf">
+                <label class="form-check-label" for="assessSelf">Self-Assessment</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Peer Assessment" id="assessPeer">
+                <label class="form-check-label" for="assessPeer">Peer Assessment</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="assessmentMethods" value="Other" id="assessOther">
+                <label class="form-check-label" for="assessOther">Other</label>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="assessmentDetails" class="form-label">Assessment details or preferences</label>
+              <textarea class="form-control" id="assessmentDetails" name="assessmentDetails" rows="3" placeholder="e.g., Exit tickets at the end of class, Group presentation rubric, Multiple choice quiz"></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <label for="additionalNotes" class="form-label">Any additional notes or requirements for this lesson plan</label>
+              <textarea class="form-control" id="additionalNotes" name="additionalNotes" rows="3" placeholder="e.g., Must include a homework assignment, Should connect to previous lesson on X, Need to prepare students for upcoming test"></textarea>
+            </div>
+            
+          <% } %>
+          
+          <div class="d-flex justify-content-between mt-4">
+            <% if (currentStep > 1) { %>
+              <a href="/questions?step=<%= currentStep - 1 %>&<%= new URLSearchParams(previousAnswers).toString() %>" class="btn btn-outline-secondary">Previous</a>
+            <% } else { %>
+              <a href="/" class="btn btn-outline-secondary">Cancel</a>
+            <% } %>
+            
+            <button type="submit" class="btn btn-primary">
+              <%= currentStep < 5 ? 'Next' : 'Generate Lesson Plan' %>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // Custom duration toggle
+    const $durationSelect = $('#duration');
+    const $customDurationContainer = $('#customDurationContainer');
+    
+    $durationSelect.on('change', function() {
+      if ($(this).val() === 'custom') {
+        $customDurationContainer.removeClass('d-none');
+      } else {
+        $customDurationContainer.addClass('d-none');
+      }
+    });
+    
+    // Debug mode toggle
+    const $debugModeSwitch = $('#debugModeSwitch');
+    let debugMode = localStorage.getItem('debugMode') === 'true';
+    
+    // Initialize debug mode from localStorage
+    $debugModeSwitch.prop('checked', debugMode);
+    
+    // Handle debug mode toggle
+    $debugModeSwitch.on('change', async function() {
+      debugMode = $(this).is(':checked');
+      localStorage.setItem('debugMode', debugMode);
+      
+      // If debug panel exists, toggle its visibility
+      if ($('#debugPanel').length) {
+        if (debugMode) {
+          $('#debugPanel').removeClass('d-none');
+        } else {
+          $('#debugPanel').addClass('d-none');
+        }
+      }
+      
+      // Update server-side debug mode
+      try {
+        await $.ajax({
+          url: '/api/debug/toggle',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            enabled: debugMode,
+            verbose: debugMode,
+            logLLMRequests: debugMode,
+            logLLMResponses: debugMode
+          })
+        });
+        
+        console.log(`Debug mode ${debugMode ? 'enabled' : 'disabled'} on server`);
+      } catch (error) {
+        console.error('Error toggling debug mode on server:', error);
+      }
+    });
+    
+    // Check server debug status on page load
+    (async function() {
+      try {
+        const response = await $.ajax({
+          url: '/api/debug/status',
+          type: 'GET'
+        });
+        
+        if (response.success && response.debug) {
+          // If server has debug enabled but client doesn't, sync them
+          if (response.debug.enabled && !debugMode) {
+            debugMode = true;
+            $debugModeSwitch.prop('checked', true);
+            localStorage.setItem('debugMode', 'true');
+          }
+        }
+      } catch (error) {
+        console.error('Error checking server debug status:', error);
+      }
+    })();
+    
+    // Function to add debug panel
+    function addDebugPanel(data) {
+      console.log('Adding debug panel with data:', data);
+      
+      // Remove existing debug panel if it exists
+      $('#debugPanel').remove();
+      
+      if (!debugMode) {
+        console.log('Debug mode is disabled, not adding debug panel');
+        return;
+      }
+      
+      if (!data) {
+        console.log('No data provided for debug panel');
+        return;
+      }
+      
+      // Create debug panel
+      const $debugPanel = $('<div>')
+        .attr('id', 'debugPanel')
+        .addClass('card mt-3 border-danger'); // Changed to danger for more visibility
+      
+      const $debugHeader = $('<div>')
+        .addClass('card-header bg-danger text-white d-flex justify-content-between align-items-center')
+        .html('<strong>DEBUG INFORMATION</strong>');
+      
+      const $collapseButton = $('<button>')
+        .addClass('btn btn-sm btn-light')
+        .text('Toggle')
+        .on('click', function() {
+          $('#debugPanelBody').toggleClass('d-none');
+        });
+      
+      $debugHeader.append($collapseButton);
+      
+      const $debugBody = $('<div>')
+        .attr('id', 'debugPanelBody')
+        .addClass('card-body');
+      
+      // Format debug data
+      let debugContent = '<h5 class="text-danger">Debug Information</h5>';
+      
+      // Add debug status
+      debugContent += '<h6>Debug Status:</h6>';
+      debugContent += `<pre>${JSON.stringify({
+        clientDebugMode: debugMode,
+        serverDebugEnabled: data._debug?.debugEnabled || config?.debug?.enabled || false,
+        serverVerboseEnabled: data._debug?.verboseEnabled || config?.debug?.verbose || false,
+        timestamp: new Date().toISOString()
+      }, null, 2)}</pre>`;
+      
+      if (data._debug) {
+        debugContent += '<h6>API Debug Info:</h6>';
+        debugContent += `<pre>${JSON.stringify(data._debug, null, 2)}</pre>`;
+      }
+      
+      if (data.suggestions && data.suggestions._debug) {
+        debugContent += '<h6>Content Debug Info:</h6>';
+        debugContent += `<pre>${JSON.stringify(data.suggestions._debug, null, 2)}</pre>`;
+      }
+      
+      // Add raw response if available
+      if (data.suggestions && data.suggestions.rawResponse) {
+        debugContent += '<h6>Raw Response:</h6>';
+        debugContent += `<pre>${data.suggestions.rawResponse}</pre>`;
+      } else {
+        debugContent += '<h6>No Raw Response Available</h6>';
+        debugContent += '<p>Enable verbose mode to see raw responses</p>';
+      }
+      
+      // Add general response info
+      debugContent += '<h6>Response Structure:</h6>';
+      debugContent += `<pre>${JSON.stringify({
+        success: data.success,
+        objectivesCount: data.suggestions?.objectives?.length || 0,
+        priorKnowledgeCount: data.suggestions?.priorKnowledge?.length || 0,
+        standardsCount: data.suggestions?.standards?.length || 0
+      }, null, 2)}</pre>`;
+      
+      $debugBody.html(debugContent);
+      $debugPanel.append($debugHeader, $debugBody);
+      
+      // Add to page - add it directly to the body for maximum visibility
+      $('body').append($debugPanel);
+      
+      console.log('Debug panel added to page');
+    }
+    
+    // Common function to create suggestion items
+    function createSuggestionItem(item, targetTextareaId) {
+      const randomId = 'suggestion-' + Math.random().toString(36).substr(2, 9);
+      
+      // Check if item is an object with text and type properties
+      const itemText = typeof item === 'object' ? item.text : item;
+      const itemType = typeof item === 'object' && item.type ? item.type : null;
+      
+      const $div = $('<div>').addClass('form-check mb-2');
+      const $input = $('<input>')
+        .addClass('form-check-input')
+        .attr({
+          type: 'checkbox',
+          id: randomId,
+          value: itemText
+        });
+      
+      const $labelContainer = $('<div>').addClass('d-flex flex-column');
+      
+      const $label = $('<label>')
+        .addClass('form-check-label')
+        .attr('for', randomId)
+        .text(itemText);
+      
+      $labelContainer.append($label);
+      
+      // Add type badge if available
+      if (itemType) {
+        const $typeBadge = $('<small>')
+          .addClass('text-muted ms-4 mt-1')
+          .html(`<span class="badge bg-light text-dark">Type: ${itemType}</span>`);
+        $labelContainer.append($typeBadge);
+      }
+      
+      $div.append($input, $labelContainer);
+      
+      $input.on('change', function() {
+        const $textarea = $(`#${targetTextareaId}`);
+        let currentText = $textarea.val().trim();
+        
+        if ($(this).is(':checked')) {
+          if (currentText) {
+            $textarea.val(currentText + '\n- ' + $(this).val());
+          } else {
+            $textarea.val('- ' + $(this).val());
+          }
+        } else {
+          $textarea.val(
+            currentText
+              .split('\n')
+              .filter(line => !line.includes($(this).val()))
+              .join('\n')
+          );
+        }
+      });
+      
+      return $div;
+    }
+    
+    // Function to check if required fields are filled
+    function checkRequiredFields() {
+      const subject = '<%= previousAnswers.subject %>';
+      const specificTopic = '<%= previousAnswers.specificTopic %>';
+      const gradeLevel = '<%= previousAnswers.gradeLevel %>';
+      
+      if (!subject || !gradeLevel) {
+        return {
+          valid: false,
+          message: 'Please complete Step 1 first to get AI suggestions.'
+        };
+      }
+      
+      return {
+        valid: true,
+        data: {
+          subject,
+          specificTopic: specificTopic || '',
+          gradeLevel
+        }
+      };
+    }
+    
+    // Function to make API request for suggestions
+    async function fetchSuggestions(type) {
+      const check = checkRequiredFields();
+      
+      if (!check.valid) {
+        alert(check.message);
+        return null;
+      }
+      
+      const requestData = {
+        ...check.data,
+        type: type // Add type to specify which suggestions to fetch
+      };
+      
+      if (debugMode) {
+        requestData.debug = true;
+        requestData.verbose = true;
+      }
+      
+      try {
+        const response = await $.ajax({
+          url: '/api/suggest-lesson-content',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(requestData)
+        });
+        
+        // Add debug panel if debug mode is enabled
+        if (debugMode) {
+          addDebugPanel(response);
+        }
+        
+        return response;
+      } catch (error) {
+        console.error(`Error fetching ${type} suggestions:`, error);
+        return null;
+      }
+    }
+    
+    // Learning Objectives suggestions
+    const $suggestObjectivesBtn = $('#suggestObjectivesBtn');
+    const $objectivesSuggestions = $('#objectivesSuggestions');
+    const $suggestedObjectivesList = $('#suggestedObjectivesList');
+    
+    $suggestObjectivesBtn.on('click', async function() {
+      $suggestObjectivesBtn.prop('disabled', true).text('Generating...');
+      
+      try {
+        // Show loading indicator
+        $objectivesSuggestions.removeClass('d-none');
+        const loadingHtml = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Generating suggestions...</p></div>';
+        $suggestedObjectivesList.html(loadingHtml);
+        
+        const response = await fetchSuggestions('objectives');
+        
+        if (response && response.success && response.suggestions) {
+          if (Array.isArray(response.suggestions.objectives) && response.suggestions.objectives.length > 0) {
+            $suggestedObjectivesList.empty();
+            
+            response.suggestions.objectives.forEach(objective => {
+              const $item = createSuggestionItem(objective, 'objectives');
+              $suggestedObjectivesList.append($item);
+            });
+          } else {
+            $suggestedObjectivesList.html('<div class="alert alert-warning">No learning objectives could be generated.</div>');
+          }
+        } else {
+          $suggestedObjectivesList.html('<div class="alert alert-warning">No suggestions could be generated. Please try again or enter content manually.</div>');
+        }
+      } catch (error) {
+        console.error('Error suggesting objectives:', error);
+        $suggestedObjectivesList.html('<div class="alert alert-danger">An error occurred while getting suggestions. Please try again or enter content manually.</div>');
+      } finally {
+        $suggestObjectivesBtn.prop('disabled', false).text('AI Suggestions');
+      }
+    });
+    
+    // Prior Knowledge suggestions
+    const $suggestPriorKnowledgeBtn = $('#suggestPriorKnowledgeBtn');
+    const $priorKnowledgeSuggestions = $('#priorKnowledgeSuggestions');
+    const $suggestedPriorKnowledgeList = $('#suggestedPriorKnowledgeList');
+    
+    $suggestPriorKnowledgeBtn.on('click', async function() {
+      // Check if objectives are filled
+      const objectives = $('#objectives').val().trim();
+      if (!objectives) {
+        alert('Please fill in learning objectives first to get relevant prior knowledge suggestions.');
+        return;
+      }
+      
+      $suggestPriorKnowledgeBtn.prop('disabled', true).text('Generating...');
+      
+      try {
+        // Show loading indicator
+        $priorKnowledgeSuggestions.removeClass('d-none');
+        const loadingHtml = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Generating suggestions...</p></div>';
+        $suggestedPriorKnowledgeList.html(loadingHtml);
+        
+        const response = await fetchSuggestions('priorKnowledge');
+        
+        if (response && response.success && response.suggestions) {
+          if (Array.isArray(response.suggestions.priorKnowledge) && response.suggestions.priorKnowledge.length > 0) {
+            $suggestedPriorKnowledgeList.empty();
+            
+            response.suggestions.priorKnowledge.forEach(item => {
+              const $item = createSuggestionItem(item, 'priorKnowledge');
+              $suggestedPriorKnowledgeList.append($item);
+            });
+          } else {
+            $suggestedPriorKnowledgeList.html('<div class="alert alert-warning">No prior knowledge items could be generated.</div>');
+          }
+        } else {
+          $suggestedPriorKnowledgeList.html('<div class="alert alert-warning">No suggestions could be generated. Please try again or enter content manually.</div>');
+        }
+      } catch (error) {
+        console.error('Error suggesting prior knowledge:', error);
+        $suggestedPriorKnowledgeList.html('<div class="alert alert-danger">An error occurred while getting suggestions. Please try again or enter content manually.</div>');
+      } finally {
+        $suggestPriorKnowledgeBtn.prop('disabled', false).text('AI Suggestions');
+      }
+    });
+    
+    // Educational Standards suggestions
+    const $suggestStandardsBtn = $('#suggestStandardsBtn');
+    const $standardsSuggestions = $('#standardsSuggestions');
+    const $suggestedStandardsList = $('#suggestedStandardsList');
+    
+    $suggestStandardsBtn.on('click', async function() {
+      // Check if prior knowledge is filled
+      const priorKnowledge = $('#priorKnowledge').val().trim();
+      if (!priorKnowledge) {
+        alert('Please fill in prior knowledge first to get relevant educational standards suggestions.');
+        return;
+      }
+      
+      $suggestStandardsBtn.prop('disabled', true).text('Generating...');
+      
+      try {
+        // Show loading indicator
+        $standardsSuggestions.removeClass('d-none');
+        const loadingHtml = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div><p class="mt-2">Generating suggestions...</p></div>';
+        $suggestedStandardsList.html(loadingHtml);
+        
+        const response = await fetchSuggestions('standards');
+        
+        if (response && response.success && response.suggestions) {
+          if (Array.isArray(response.suggestions.standards) && response.suggestions.standards.length > 0) {
+            $suggestedStandardsList.empty();
+            
+            response.suggestions.standards.forEach(standard => {
+              const $item = createSuggestionItem(standard, 'standards');
+              $suggestedStandardsList.append($item);
+            });
+          } else {
+            $suggestedStandardsList.html('<div class="alert alert-warning">No educational standards could be generated.</div>');
+          }
+        } else {
+          $suggestedStandardsList.html('<div class="alert alert-warning">No suggestions could be generated. Please try again or enter content manually.</div>');
+        }
+      } catch (error) {
+        console.error('Error suggesting standards:', error);
+        $suggestedStandardsList.html('<div class="alert alert-danger">An error occurred while getting suggestions. Please try again or enter content manually.</div>');
+      } finally {
+        $suggestStandardsBtn.prop('disabled', false).text('AI Suggestions');
+      }
+    });
+  });
+</script>
