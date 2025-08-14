@@ -1,0 +1,156 @@
+name: Learning Platform Team Communication Protocol
+version: 1.0
+
+message_types:
+  task_request:
+    format:
+      id: string
+      type: task_request
+      from: agent_id
+      to: agent_id | broadcast
+      priority: [critical, high, medium, low]
+      task:
+        description: string
+        requirements: object
+        deadline: timestamp
+        dependencies: [agent_id]
+    acknowledgment_required: true
+    
+  status_update:
+    format:
+      id: string
+      type: status_update
+      from: agent_id
+      to: orchestrator | agent_id
+      task_id: string
+      status: [in_progress, completed, blocked, failed]
+      progress: percentage
+      details: object
+    frequency: on_change
+    
+  collaboration_request:
+    format:
+      id: string
+      type: collaboration
+      from: agent_id
+      to: [agent_id]
+      subject: string
+      context: object
+      urgency: [immediate, soon, normal]
+    response_required: true
+    
+  data_sharing:
+    format:
+      id: string
+      type: data_share
+      from: agent_id
+      to: [agent_id]
+      data_type: string
+      payload: object
+      metadata:
+        format: string
+        version: string
+        timestamp: string
+
+communication_flows:
+  feature_development:
+    participants:
+      initiator: product-manager
+      sequence:
+        - to: ux-ui-designer
+          data: user_stories
+        - to: technical-lead
+          data: technical_requirements
+        - parallel:
+          - to: frontend-developer
+            data: ui_specifications
+          - to: backend-developer
+            data: api_requirements
+        - to: qa-engineer
+          data: test_scenarios
+        - to: devops-engineer
+          data: deployment_package
+          
+  xapi_compliance:
+    participants:
+      validators: [backend-developer, data-engineer, qa-engineer]
+      flow_type: circular
+      trigger: xapi_statement_created
+      
+  llm_integration:
+    participants:
+      core: [data-engineer, backend-developer]
+      reviewers: [technical-lead, product-manager]
+      consumers: [frontend-developer, ux-ui-designer]
+      
+  code_quality:
+    participants:
+      submitter: any_developer
+      reviewers: [technical-lead, qa-engineer]
+      trigger: code_submission
+      checks:
+        - module_size_limit
+        - dry_principle
+        - xapi_compliance
+
+escalation_matrix:
+  blocking_issues:
+    level_1: direct_collaborator
+    level_2: technical-lead
+    level_3: orchestrator
+    
+  deadline_risks:
+    immediate: orchestrator
+    preventive: product-manager
+    
+  technical_conflicts:
+    resolver: technical-lead
+    arbitrator: orchestrator
+
+synchronization_points:
+  daily_standup:
+    participants: all
+    frequency: daily
+    format: status_update
+    
+  sprint_planning:
+    participants: all
+    lead: product-manager
+    frequency: bi_weekly
+    
+  architecture_review:
+    participants: [technical-lead, all_developers]
+    frequency: weekly
+    
+  quality_checkpoint:
+    participants: [qa-engineer, technical-lead, developers]
+    trigger: pre_deployment
+
+data_contracts:
+  xapi_statements:
+    owner: data-engineer
+    consumers: [backend-developer, frontend-developer, qa-engineer]
+    format: xapi_2.0
+    validation: required
+    
+  llm_prompts:
+    owner: data-engineer
+    consumers: [backend-developer, product-manager]
+    versioning: semantic
+    
+  ui_components:
+    owner: frontend-developer
+    consumers: [ux-ui-designer, qa-engineer]
+    format: jquery_plugin
+    
+  deployment_configs:
+    owner: devops-engineer
+    consumers: all_developers
+    format: yaml
+    
+performance_sla:
+  message_delivery: <100ms
+  acknowledgment: <500ms
+  task_completion_notification: immediate
+  data_sharing_bandwidth: unlimited
+  concurrent_communications: 50

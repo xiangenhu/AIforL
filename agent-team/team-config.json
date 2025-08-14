@@ -1,0 +1,91 @@
+{
+  "name": "Learning Platform Development Team",
+  "version": "1.0.0",
+  "description": "Multi-agent team for developing a lightweight, modular learning platform with xAPI and LLM integration",
+  
+  "orchestrator": {
+    "config": "./orchestrator-agent.yaml",
+    "startup_priority": 0
+  },
+  
+  "agents": {
+    "product-manager": {
+      "config": "./subagents/product-manager.yaml",
+      "startup_priority": 1,
+      "dependencies": []
+    },
+    "technical-lead": {
+      "config": "./subagents/technical-lead.yaml", 
+      "startup_priority": 1,
+      "dependencies": ["product-manager"]
+    },
+    "ux-ui-designer": {
+      "config": "./subagents/ux-ui-designer.yaml",
+      "startup_priority": 2,
+      "dependencies": ["product-manager"]
+    },
+    "data-engineer": {
+      "config": "./subagents/data-engineer.yaml",
+      "startup_priority": 2,
+      "dependencies": ["technical-lead"]
+    },
+    "backend-developer": {
+      "config": "./subagents/backend-developer.yaml",
+      "startup_priority": 3,
+      "dependencies": ["technical-lead", "data-engineer"]
+    },
+    "frontend-developer": {
+      "config": "./subagents/frontend-developer.yaml",
+      "startup_priority": 3,
+      "dependencies": ["technical-lead", "ux-ui-designer"]
+    },
+    "qa-engineer": {
+      "config": "./subagents/qa-engineer.yaml",
+      "startup_priority": 4,
+      "dependencies": ["frontend-developer", "backend-developer"]
+    },
+    "devops-engineer": {
+      "config": "./subagents/devops-engineer.yaml",
+      "startup_priority": 4,
+      "dependencies": ["backend-developer", "frontend-developer"]
+    }
+  },
+  
+  "communication": {
+    "protocol": "./communication-protocol.yaml",
+    "message_queue": "in-memory",
+    "persistence": "xapi-lrs"
+  },
+  
+  "shared_resources": {
+    "xapi_lrs": {
+      "type": "learning_record_store",
+      "endpoint": "${LRS_ENDPOINT}",
+      "auth": "${LRS_AUTH}"
+    },
+    "llm_api": {
+      "type": "language_model",
+      "provider": "${LLM_PROVIDER}",
+      "api_key": "${LLM_API_KEY}"
+    }
+  },
+  
+  "constraints": {
+    "max_module_size": 200,
+    "code_duplication_threshold": 0.05,
+    "dashboard_load_time": 2000,
+    "api_response_time": 200,
+    "deployment_cost_limit": 50
+  },
+  
+  "monitoring": {
+    "metrics_collection": true,
+    "performance_tracking": true,
+    "compliance_checking": true,
+    "alert_thresholds": {
+      "module_size_violation": "immediate",
+      "xapi_validation_failure": "immediate",
+      "performance_degradation": "warning"
+    }
+  }
+}

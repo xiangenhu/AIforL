@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Assisted Language Learning Platform</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/car-style.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="/js/car-components.js" defer></script>
+</head>
+<body>
+  <!-- Role-based Navigation -->
+  <header class="car-header">
+    <div class="container-fluid">
+      <div class="d-flex justify-content-between align-items-center py-3">
+        <div class="d-flex align-items-center">
+          <h1 class="h4 mb-0">AI Language Learning</h1>
+          <span class="role-badge ms-3" id="userRole">Learner</span>
+        </div>
+        <nav>
+          <ul class="nav">
+            <li class="nav-item">
+              <a href="#projects" class="nav-link">My Projects</a>
+            </li>
+            <li class="nav-item">
+              <a href="#ai-tools" class="nav-link">AI Tools</a>
+            </li>
+            <li class="nav-item">
+              <a href="#progress" class="nav-link">Progress</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                <i class="bi bi-person-circle"></i>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#profile">Profile</a></li>
+                <li><a class="dropdown-item" href="#settings">Settings</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#logout">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="car-main">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-2 car-sidebar">
+          <div class="sidebar-content">
+            <h5 class="sidebar-heading">Quick Actions</h5>
+            <button class="btn btn-primary w-100 mb-3" id="newProjectBtn">
+              <i class="bi bi-plus-circle"></i> New Project
+            </button>
+            
+            <h5 class="sidebar-heading mt-4">ILO Progress</h5>
+            <div id="iloProgressWidget" class="ilo-progress-mini">
+              <!-- ILO progress bars will be inserted here -->
+            </div>
+            
+            <h5 class="sidebar-heading mt-4">AI Tools</h5>
+            <div class="ai-tools-quick-access">
+              <button class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                <i class="bi bi-mic"></i> ELSA Speak
+              </button>
+              <button class="btn btn-sm btn-outline-secondary w-100 mb-2">
+                <i class="bi bi-chat-dots"></i> TalkPal AI
+              </button>
+              <button class="btn btn-sm btn-outline-secondary w-100">
+                <i class="bi bi-translate"></i> Doubao
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-md-10 car-content">
+          <!-- Project Stage Wizard -->
+          <div class="project-stage-wizard mb-4" id="projectWizard">
+            <div class="stage-progress">
+              <div class="stage-item active" data-stage="define">
+                <div class="stage-icon">1</div>
+                <div class="stage-label">Define</div>
+              </div>
+              <div class="stage-connector"></div>
+              <div class="stage-item" data-stage="collect">
+                <div class="stage-icon">2</div>
+                <div class="stage-label">Collect</div>
+              </div>
+              <div class="stage-connector"></div>
+              <div class="stage-item" data-stage="create">
+                <div class="stage-icon">3</div>
+                <div class="stage-label">Create</div>
+              </div>
+              <div class="stage-connector"></div>
+              <div class="stage-item" data-stage="present">
+                <div class="stage-icon">4</div>
+                <div class="stage-label">Present</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Project Section -->
+          <div class="current-project-section">
+            <h2 class="h4 mb-4">Current Project: Cultural Exhibition Design</h2>
+            
+            <!-- Language Toggle -->
+            <div class="language-toggle mb-4">
+              <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="language" id="englishBtn" checked>
+                <label class="btn btn-outline-primary" for="englishBtn">English</label>
+                
+                <input type="radio" class="btn-check" name="language" id="chineseBtn">
+                <label class="btn btn-outline-primary" for="chineseBtn">中文</label>
+              </div>
+            </div>
+
+            <!-- Stage Content -->
+            <div class="stage-content">
+              <!-- Define Stage Content -->
+              <div class="stage-panel active" id="defineStage">
+                <h3 class="h5 mb-3">Stage 1: Define Theme & Goals</h3>
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="card">
+                      <div class="card-body">
+                        <h6 class="card-subtitle mb-2 text-muted">Project Planning</h6>
+                        <form id="defineForm">
+                          <div class="mb-3">
+                            <label for="projectTitle" class="form-label">Project Title</label>
+                            <input type="text" class="form-control" id="projectTitle" 
+                                   placeholder="Enter your project title">
+                          </div>
+                          <div class="mb-3">
+                            <label for="projectTheme" class="form-label">Theme</label>
+                            <textarea class="form-control" id="projectTheme" rows="3"
+                                      placeholder="Describe your cultural exhibition theme"></textarea>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label">Learning Goals</label>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="goal1">
+                              <label class="form-check-label" for="goal1">
+                                Improve cultural vocabulary
+                              </label>
+                            </div>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="goal2">
+                              <label class="form-check-label" for="goal2">
+                                Practice descriptive writing
+                              </label>
+                            </div>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" id="goal3">
+                              <label class="form-check-label" for="goal3">
+                                Develop presentation skills
+                              </label>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <!-- AI Assistant Panel -->
+                    <div class="ai-assistant-panel">
+                      <h6 class="panel-title">AI Assistant</h6>
+                      <div class="ai-suggestions">
+                        <p class="small text-muted">Get AI help with:</p>
+                        <button class="btn btn-sm btn-outline-info w-100 mb-2" 
+                                onclick="openPromptEngineer('brainstorm')">
+                          <i class="bi bi-lightbulb"></i> Brainstorm Topics
+                        </button>
+                        <button class="btn btn-sm btn-outline-info w-100 mb-2"
+                                onclick="openPromptEngineer('outline')">
+                          <i class="bi bi-list-nested"></i> Generate Outline
+                        </button>
+                        <button class="btn btn-sm btn-outline-info w-100"
+                                onclick="openPromptEngineer('refine')">
+                          <i class="bi bi-magic"></i> Refine Proposal
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Other stage panels would follow similar structure -->
+            </div>
+
+            <!-- Stage Navigation -->
+            <div class="stage-navigation mt-4">
+              <button class="btn btn-secondary" id="prevStageBtn" disabled>
+                <i class="bi bi-arrow-left"></i> Previous
+              </button>
+              <button class="btn btn-primary" id="nextStageBtn">
+                Next <i class="bi bi-arrow-right"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Reflection Journal Section -->
+          <div class="reflection-section mt-5">
+            <h3 class="h5 mb-3">
+              <i class="bi bi-journal-text"></i> Reflection Journal
+            </h3>
+            <div class="reflection-entries" id="reflectionJournal">
+              <!-- Reflection entries will be dynamically added -->
+            </div>
+            <button class="btn btn-sm btn-outline-primary mt-2" id="addReflectionBtn">
+              <i class="bi bi-plus"></i> Add Reflection
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Prompt Engineering Modal -->
+  <div class="modal fade" id="promptEngineerModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Prompt Engineering Workshop</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="promptEngineerWidget">
+            <!-- Prompt engineering interface will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

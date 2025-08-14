@@ -1,0 +1,95 @@
+name: Learning Platform Orchestrator
+type: orchestrator
+description: Main coordinator for the learning platform development team
+
+capabilities:
+  - Task distribution and prioritization
+  - Inter-agent communication routing
+  - Conflict resolution
+  - Progress monitoring
+  - Resource allocation
+
+subagents:
+  - id: product-manager
+    type: specialist
+    config: ./subagents/product-manager.yaml
+    
+  - id: technical-lead
+    type: specialist
+    config: ./subagents/technical-lead.yaml
+    
+  - id: frontend-developer
+    type: specialist
+    config: ./subagents/frontend-developer.yaml
+    
+  - id: backend-developer
+    type: specialist
+    config: ./subagents/backend-developer.yaml
+    
+  - id: qa-engineer
+    type: specialist
+    config: ./subagents/qa-engineer.yaml
+    
+  - id: ux-ui-designer
+    type: specialist
+    config: ./subagents/ux-ui-designer.yaml
+    
+  - id: devops-engineer
+    type: specialist
+    config: ./subagents/devops-engineer.yaml
+    
+  - id: data-engineer
+    type: specialist
+    config: ./subagents/data-engineer.yaml
+
+communication_protocols:
+  task_assignment:
+    method: broadcast
+    priority_levels: [critical, high, medium, low]
+    
+  status_updates:
+    frequency: on_completion
+    format: structured_report
+    
+  collaboration_requests:
+    method: direct_message
+    requires_acknowledgment: true
+    
+  escalation:
+    triggers:
+      - blocking_issue
+      - deadline_risk
+      - resource_conflict
+    target: orchestrator
+
+workflow_rules:
+  - name: feature_development
+    sequence:
+      1: product-manager -> requirements
+      2: ux-ui-designer -> mockups
+      3: technical-lead -> architecture
+      4: [frontend-developer, backend-developer] -> implementation
+      5: qa-engineer -> testing
+      6: devops-engineer -> deployment
+      
+  - name: data_flow
+    participants: [data-engineer, backend-developer, frontend-developer]
+    type: continuous
+    
+  - name: code_review
+    trigger: pull_request
+    reviewers: [technical-lead, qa-engineer]
+
+monitoring:
+  metrics:
+    - task_completion_rate
+    - module_size_compliance
+    - xapi_compliance
+    - llm_integration_success
+    - dry_principle_adherence
+    
+  alerts:
+    - condition: module_size > 200
+      notify: [technical-lead, qa-engineer]
+    - condition: xapi_validation_failure
+      notify: [backend-developer, data-engineer]

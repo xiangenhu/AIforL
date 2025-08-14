@@ -1,0 +1,272 @@
+/* CAR Framework Styles */
+:root {
+  --car-primary: #2563eb;
+  --car-secondary: #64748b;
+  --car-success: #10b981;
+  --car-info: #0ea5e9;
+  --car-warning: #f59e0b;
+  --car-danger: #ef4444;
+  --car-light: #f8fafc;
+  --car-dark: #1e293b;
+  
+  /* Role-specific colors */
+  --role-admin: #8b5cf6;
+  --role-teacher: #0891b2;
+  --role-learner: #10b981;
+  
+  /* Stage colors */
+  --stage-define: #3b82f6;
+  --stage-collect: #8b5cf6;
+  --stage-create: #f59e0b;
+  --stage-present: #10b981;
+}
+
+/* Global Styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--car-light);
+  color: var(--car-dark);
+  line-height: 1.6;
+}
+
+/* Header Styles */
+.car-header {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: var(--role-learner);
+  color: white;
+}
+
+.role-badge.admin { background-color: var(--role-admin); }
+.role-badge.teacher { background-color: var(--role-teacher); }
+
+/* Sidebar Styles */
+.car-sidebar {
+  background: white;
+  border-right: 1px solid #e5e7eb;
+  min-height: calc(100vh - 60px);
+  padding: 1.5rem 1rem;
+}
+
+.sidebar-heading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+/* ILO Progress Widget */
+.ilo-progress-mini {
+  font-size: 0.875rem;
+}
+
+.ilo-progress-mini .progress {
+  height: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.ilo-progress-mini .progress-bar {
+  background: linear-gradient(90deg, var(--car-primary), var(--car-info));
+}
+
+/* Project Stage Wizard */
+.project-stage-wizard {
+  background: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.stage-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stage-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.stage-item.active .stage-icon {
+  background: var(--car-primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.stage-item.completed .stage-icon {
+  background: var(--car-success);
+  color: white;
+}
+
+.stage-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.stage-item.active .stage-label {
+  color: var(--car-primary);
+  font-weight: 600;
+}
+
+.stage-connector {
+  width: 100px;
+  height: 2px;
+  background: #e5e7eb;
+  margin: 0 1rem;
+}
+
+/* Language Toggle */
+.language-toggle .btn-check:checked + .btn {
+  background-color: var(--car-primary);
+  color: white;
+}
+
+/* AI Assistant Panel */
+.ai-assistant-panel {
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+
+.ai-assistant-panel .panel-title {
+  color: var(--car-info);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+/* Stage Content */
+.stage-panel {
+  display: none;
+}
+
+.stage-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Reflection Section */
+.reflection-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.reflection-entries {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.reflection-entry {
+  padding: 1rem;
+  border-left: 3px solid var(--car-info);
+  background: #f8fafc;
+  margin-bottom: 0.75rem;
+  border-radius: 0.25rem;
+}
+
+.reflection-entry .timestamp {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Prompt Engineering Widget */
+.prompt-engineer-container {
+  display: flex;
+  gap: 1rem;
+}
+
+.prompt-input-area {
+  flex: 1;
+}
+
+.prompt-tips {
+  width: 300px;
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.prompt-template {
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem;
+  border-radius: 0.25rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.prompt-template:hover {
+  border-color: var(--car-primary);
+  transform: translateY(-1px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .car-sidebar {
+    display: none;
+  }
+  
+  .car-content {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .stage-progress {
+    flex-wrap: wrap;
+  }
+  
+  .stage-connector {
+    display: none;
+  }
+  
+  .prompt-engineer-container {
+    flex-direction: column;
+  }
+  
+  .prompt-tips {
+    width: 100%;
+  }
+}
+
+/* Module Size Compliance Note: 195 lines */

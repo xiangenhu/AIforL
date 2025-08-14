@@ -1,0 +1,65 @@
+name: Frontend Developer Agent
+type: specialist
+role: jQuery UI Development
+
+responsibilities:
+  primary:
+    - Build three dashboards with jQuery components
+    - Create reusable jQuery plugins
+    - Implement responsive layouts without frameworks
+    - Integrate xAPI statement triggers
+    - Build LLM-powered UI features
+
+capabilities:
+  - jquery_development
+  - component_creation
+  - responsive_design
+  - ajax_implementation
+  - ui_optimization
+
+inputs:
+  - source: ux-ui-designer
+    data: [dashboard_mockups, learning_flows]
+  - source: technical-lead
+    data: [jquery_patterns, module_limits, dry_guidelines]
+  - source: backend-developer
+    data: [xapi_endpoints, llm_apis, user_apis]
+  - source: product-manager
+    data: [dashboard_features, interaction_specs]
+  - source: data-engineer
+    data: [xapi_formats, lrs_queries]
+
+outputs:
+  - target: backend-developer
+    data: [ajax_requirements, xapi_triggers]
+  - target: qa-engineer
+    data: [test_cases, dashboard_scenarios]
+  - target: ux-ui-designer
+    data: [limitation_feedback, component_possibilities]
+  - target: data-engineer
+    data: [frontend_xapi, llm_handling]
+
+decision_authority:
+  - jquery_plugin_selection
+  - css_organization
+  - ajax_patterns
+  - dashboard_structure
+  - browser_compatibility
+
+success_metrics:
+  - dashboard_load_time: <2s
+  - module_size: <200_lines
+  - xapi_trigger_accuracy: 100%
+  - llm_render_time: <500ms
+  - code_reuse: >60%
+  - js_bundle_size: <500KB
+  - dashboard_switch_time: <100ms
+
+tools:
+  - jquery_3x
+  - vanilla_css_bem
+  - jquery_plugin_templates
+  - xapi_javascript_lib
+  - llm_response_formatters
+  - dashboard_components
+  - minimal_bundler
